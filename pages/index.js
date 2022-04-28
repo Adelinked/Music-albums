@@ -68,8 +68,17 @@ export default function Home() {
       <main className={styles.main}>
         <div className={styles.appTitleDiv} style={{ marginBottom: "10px" }}>
           <h1 className={styles.appTitle}>Music Albums</h1>
-          <a href="https://www.last.fm" target="_blank" title="Powered by">
-            <img style={{ width: "70px" }} src="last_fm.png"></img>
+          <a
+            href="https://www.last.fm"
+            target="_blank"
+            rel="noreferrer"
+            title="Powered by"
+          >
+            <img
+              style={{ width: "70px" }}
+              src="last_fm.png"
+              alt="last fm logo"
+            />
           </a>
         </div>
 
