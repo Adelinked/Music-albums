@@ -1,8 +1,62 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import Head from "next/head";
+import Image from "next/image";
+import styles from "../styles/Home.module.css";
+import SearchInput from "../components/SearchInput";
+import { FreeSoloCreateOption } from "../components/SearchInput";
+import Album from "../components/Album";
+import { CircularProgress } from "@mui/material";
+
+import { useAppContext } from "../context";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { marked } from "marked";
 
 export default function Home() {
+  const { globalState, setGlobalState } = useAppContext();
+  const [albums, setAlbums] = useState([]);
+  const [artistInfo, setArtistInfo] = useState([]);
+  const [moreInfo, setMoreInfo] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const artist = globalState;
+
+  const getData = async (artist) => {
+    try {
+      const data = await axios.get(`/api/albums?artist=${artist}`);
+      setAlbums(data.data.msg.topalbums.album);
+    } catch (error) {}
+
+    try {
+      const data = await axios.get(`/api/artist?artist=${artist}`);
+      setArtistInfo(data.data.msg.artist);
+    } catch (error) {}
+    setLoading(false);
+  };
+  useEffect(() => {
+    getData(globalState);
+  }, []);
+  const fillpreview = (content) => {
+    let rawMarkup = marked.parse(content);
+    marked.setOptions({ breaks: true });
+    return { __html: rawMarkup };
+  };
+  let bioContent = "";
+
+  if (artistInfo && artistInfo.bio) {
+    bioContent =
+      artistInfo.bio.content.length < 200 || moreInfo
+        ? artistInfo.bio.content
+        : artistInfo.bio.content.slice(0, 200) + "...";
+  }
+
+  const handleChange = (e) => {
+    const artist = e.target.innerText;
+    setGlobalState(e.target.innerText);
+    setLoading(true);
+    setArtistInfo([]);
+    setAlbums([]);
+
+    getData(artist);
+  };
   return (
     <div className={styles.container}>
       <Head>
@@ -12,44 +66,56 @@ export default function Home() {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
+        <div className={styles.appTitleDiv} style={{ marginBottom: "10px" }}>
+          <h1 className={styles.appTitle}>Music Albums</h1>
+          <a href="https://www.last.fm" target="_blank" title="Powered by">
+            <img style={{ width: "70px" }} src="last_fm.png"></img>
           </a>
         </div>
+
+        {loading ? (
+          <div style={{ marginBottom: "20px" }}>
+            <CircularProgress />
+          </div>
+        ) : (
+          <>
+            <h5 className={styles.title}>
+              {artistInfo && artistInfo.name
+                ? artistInfo.name
+                : " Select an artist"}
+            </h5>
+            {artistInfo && artistInfo.bio && (
+              <div className={styles.preview}>
+                <div dangerouslySetInnerHTML={fillpreview(bioContent)} />
+                <a
+                  className={styles.lessMore}
+                  style={{ fontWeight: "600" }}
+                  onClick={() => setMoreInfo(!moreInfo)}
+                >
+                  {!moreInfo ? "show more" : "show less"}
+                </a>
+              </div>
+            )}
+          </>
+        )}
+        <FreeSoloCreateOption handleChange={handleChange} disabled={loading} />
+        {loading ? (
+          <div style={{ marginTop: "10px" }}>
+            <CircularProgress />
+          </div>
+        ) : (
+          <div className={styles.albums}>
+            {albums.map((a) => (
+              <Album
+                key={a.name}
+                name={a.name}
+                img={a.image[3]["#text"] ? a.image[3]["#text"] : "/blank.png"}
+                mbid={a.mbid}
+                url={a.url}
+              />
+            ))}
+          </div>
+        )}
       </main>
 
       <footer className={styles.footer}>
@@ -58,12 +124,12 @@ export default function Home() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Powered by{' '}
+          Powered by{" "}
           <span className={styles.logo}>
             <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
           </span>
         </a>
       </footer>
     </div>
-  )
+  );
 }

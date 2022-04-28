@@ -9,8 +9,39 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+  font-weight: 600;
 }
 
 * {
   box-sizing: border-box;
+}
+
+.track-pad {
+  border: 1px solid black;
+  text-align: center;
+}
+.album-pad {
+  text-align: center;
+  border-radius: 10px;
+  position: relative;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+}
+.image {
+  width: 100%;
+  object-fit: cover;
+}
+.album-title {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.734);
+  width: 100%;
+  color: aliceblue;
+  transform: translateY(100%);
+  transition: all 0.3s linear;
+}
+.album-pad:hover .album-title {
+  transform: translateY(0);
 }
