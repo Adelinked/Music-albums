@@ -52,6 +52,7 @@ export default function Home() {
     const artist = e.target.innerText;
     setGlobalState(e.target.innerText);
     setLoading(true);
+    setMoreInfo(false);
     setArtistInfo([]);
     setAlbums([]);
 
