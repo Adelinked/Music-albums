@@ -11,6 +11,8 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { marked } from "marked";
 
+const numAlbumsPage = 4;
+let numPages;
 export default function Home() {
   const { globalState, setGlobalState } = useAppContext();
   const [albums, setAlbums] = useState([]);
@@ -18,11 +20,35 @@ export default function Home() {
   const [moreInfo, setMoreInfo] = useState(false);
   const [loading, setLoading] = useState(true);
   const artist = globalState;
+  const [page, setPage] = useState(0);
+  const [data, setData] = useState([]);
 
   const getData = async (artist) => {
     try {
       const data = await axios.get(`/api/albums?artist=${artist}`);
-      setAlbums(data.data.msg.topalbums.album);
+      const fetchedData = data.data.msg.topalbums.album;
+      const dataLen = fetchedData.length;
+      numPages = Math.floor(fetchedData.length / numAlbumsPage);
+      const rest = dataLen % numAlbumsPage;
+      let paginatedData = [];
+      let index = 0;
+      while (index < numPages) {
+        paginatedData[index] = fetchedData.slice(
+          index * numAlbumsPage,
+          index * numAlbumsPage + numAlbumsPage
+        );
+        index++;
+      }
+      const restData = fetchedData.slice(dataLen - rest, dataLen);
+      if (restData.length > 0) {
+        // add the remaining data if any
+        paginatedData = [
+          ...paginatedData,
+          fetchedData.slice(dataLen - rest, dataLen),
+        ];
+      }
+      setData(paginatedData);
+      setAlbums(paginatedData[page]);
     } catch (error) {}
 
     try {
@@ -31,8 +57,30 @@ export default function Home() {
     } catch (error) {}
     setLoading(false);
   };
+
+  useEffect(() => {
+    setAlbums(data[page]);
+  }, [page]);
+
+  const nextPage = () => {
+    setPage((oldPage) => {
+      return oldPage === numPages ? 0 : oldPage + 1;
+    });
+  };
+
+  const previousPage = () => {
+    setPage((oldPage) => {
+      return oldPage === 0 ? numPages : oldPage - 1;
+    });
+  };
+
+  const handlePage = (newpage) => {
+    setPage(newpage);
+  };
+
   useEffect(() => {
     getData(globalState);
+    numPages = Math.floor(data.length / numAlbumsPage);
   }, []);
   const fillpreview = (content) => {
     let rawMarkup = marked.parse(content);
@@ -50,11 +98,13 @@ export default function Home() {
 
   const handleChange = (e) => {
     const artist = e.target.innerText;
-    setGlobalState(e.target.innerText);
+    setGlobalState(artist);
     setLoading(true);
     setMoreInfo(false);
     setArtistInfo([]);
     setAlbums([]);
+    setData([]);
+    setPage(0);
 
     getData(artist);
   };
@@ -109,22 +159,53 @@ export default function Home() {
           </>
         )}
         <FreeSoloCreateOption handleChange={handleChange} disabled={loading} />
+
         {loading ? (
           <div style={{ marginTop: "10px" }}>
             <CircularProgress />
           </div>
         ) : (
-          <div className={styles.albums}>
-            {albums.map((a) => (
-              <Album
-                key={a.name}
-                name={a.name}
-                img={a.image[3]["#text"] ? a.image[3]["#text"] : "/blank.png"}
-                mbid={a.mbid}
-                url={a.url}
-              />
-            ))}
-          </div>
+          <>
+            {" "}
+            <div className="pagePanel">
+              <button className="page-cmd" onClick={previousPage}>
+                Previous
+              </button>
+              {data.map((item, index) => {
+                return (
+                  <button
+                    key={index}
+                    className={`page-btn ${
+                      index === page ? "active-btn" : null
+                    }`}
+                    onClick={() => handlePage(index)}
+                  >
+                    {index + 1}
+                  </button>
+                );
+              })}
+              <button className="page-cmd" onClick={nextPage}>
+                Next
+              </button>
+              <p className="progress">
+                {data
+                  .slice(0, page + 1)
+                  .reduce((prev, curr) => prev + curr.length, 0)}
+                /{data.reduce((prev, curr) => prev + curr.length, 0)}
+              </p>
+            </div>
+            <div className={styles.albums}>
+              {albums.map((a) => (
+                <Album
+                  key={a.name}
+                  name={a.name}
+                  img={a.image[3]["#text"] ? a.image[3]["#text"] : "/blank.png"}
+                  mbid={a.mbid}
+                  url={a.url}
+                />
+              ))}
+            </div>
+          </>
         )}
       </main>
 

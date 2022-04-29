@@ -49,6 +49,7 @@ export function FreeSoloCreateOption(props) {
 
   return (
     <Autocomplete
+      disabled={props.disabled}
       value={value}
       onChange={(event, newValue) => {
         props.handleChange(event);
