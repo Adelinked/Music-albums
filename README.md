@@ -3,7 +3,7 @@
 This project contains the source code of a music app using the react useContext hook.
 
 Here is a screenshot of the application:
-![App Screenshot](https://i.postimg.cc/k5W86SBh/Screenshot-1.png)
+![App Screenshot](https://i.postimg.cc/CMn7q3d1/Screenshot-3.png)
 
 ## Built With
 
