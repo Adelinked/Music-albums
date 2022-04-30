@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import { Autocomplete, TextField } from "@mui/material";
 import { createFilterOptions } from "@mui/material/Autocomplete";
@@ -28,7 +28,7 @@ export default function SearchInput(props) {
   );
 }
 
-let artists = [
+const init_artists = [
   { name: "Michael Jackson" },
   { name: "Celine Dion" },
   { name: "Cher" },
@@ -41,11 +41,15 @@ export function FreeSoloCreateOption(props) {
   const { globalState } = useAppContext();
 
   const [value, setValue] = React.useState({ name: globalState });
+  const [artists, setArtists] = useState(init_artists);
 
-  artists =
-    artists.filter((a) => a.name === globalState).length > 0
-      ? artists
-      : [{ name: globalState }, ...artists];
+  useEffect(() => {
+    const newArtists =
+      artists.filter((a) => a.name === globalState).length > 0
+        ? artists
+        : [{ name: globalState }, ...artists];
+    setArtists(newArtists);
+  }, [globalState]);
 
   return (
     <Autocomplete

@@ -89,6 +89,12 @@ export default function Home() {
 
     getData(artist);
   };
+
+  let currPage = data
+    .slice(0, page + 1)
+    .reduce((prev, curr) => prev + curr.length, 0);
+  currPage = currPage + 1 < 10 ? "0" + currPage : currPage;
+
   return (
     <div className={styles.container}>
       <Head>
@@ -149,8 +155,7 @@ export default function Home() {
             <CircularProgress />
           </div>
         ) : (
-          <>
-            {" "}
+          <div className="result">
             <div className="pagePanel">
               <button className="page-cmd" onClick={previousPage}>
                 Previous
@@ -171,12 +176,9 @@ export default function Home() {
               <button className="page-cmd" onClick={nextPage}>
                 Next
               </button>
-              <p className="progress">
-                {data
-                  .slice(0, page + 1)
-                  .reduce((prev, curr) => prev + curr.length, 0)}
-                /{data.reduce((prev, curr) => prev + curr.length, 0)}
-              </p>
+              <span className="progress">
+                {currPage}/{data.reduce((prev, curr) => prev + curr.length, 0)}
+              </span>
             </div>
             <div className={styles.albums}>
               {albums.map((a) => (
@@ -189,7 +191,7 @@ export default function Home() {
                 />
               ))}
             </div>
-          </>
+          </div>
         )}
       </main>
 

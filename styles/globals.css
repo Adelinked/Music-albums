@@ -49,8 +49,12 @@ a {
 }
 
 .pagePanel {
-  margin: 5px 0;
+  margin: 5px auto;
+  width: 100%;
   display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .pagePanel > * {
@@ -58,6 +62,7 @@ a {
   user-select: none;
   font-size: 16px;
   font-weight: 600;
+  height: 30px;
 }
 .page-cmd {
   width: 80px;
@@ -82,41 +87,33 @@ a {
   margin-left: 5px;
   font-size: 16px;
   font-weight: 600;
+  display: flex;
+  align-items: center;
 }
 
 @media (max-width: 992px) {
   .pagePanel > * {
-    font-size: 14px;
   }
 
   .page-cmd {
-    width: 70px;
   }
   .page-btn {
-    width: 40px;
   }
 }
 
 @media (max-width: 768px) {
   .pagePanel > * {
-    font-size: 13px;
-    font-weight: 500;
   }
   .page-cmd {
-    width: 60px;
   }
   .page-btn {
-    width: 35px;
   }
 }
 @media (max-width: 576px) {
   .pagePanel > * {
-    font-size: 12px;
   }
   .page-cmd {
-    width: 55px;
   }
   .page-btn {
-    width: 30px;
   }
 }
