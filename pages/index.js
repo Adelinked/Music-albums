@@ -1,17 +1,16 @@
 import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
-import SearchInput from "../components/SearchInput";
 import { FreeSoloCreateOption } from "../components/SearchInput";
 import Album from "../components/Album";
 import { CircularProgress } from "@mui/material";
-
+import paginate from "../lib/paginate";
 import { useAppContext } from "../context";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { marked } from "marked";
 
-const numAlbumsPage = 4;
+const numAlbumsPage = 6;
 let numPages;
 export default function Home() {
   const { globalState, setGlobalState } = useAppContext();
@@ -27,28 +26,10 @@ export default function Home() {
     try {
       const data = await axios.get(`/api/albums?artist=${artist}`);
       const fetchedData = data.data.msg.topalbums.album;
-      const dataLen = fetchedData.length;
       numPages = Math.floor(fetchedData.length / numAlbumsPage);
-      const rest = dataLen % numAlbumsPage;
-      let paginatedData = [];
-      let index = 0;
-      while (index < numPages) {
-        paginatedData[index] = fetchedData.slice(
-          index * numAlbumsPage,
-          index * numAlbumsPage + numAlbumsPage
-        );
-        index++;
-      }
-      const restData = fetchedData.slice(dataLen - rest, dataLen);
-      if (restData.length > 0) {
-        // add the remaining data if any
-        paginatedData = [
-          ...paginatedData,
-          fetchedData.slice(dataLen - rest, dataLen),
-        ];
-      }
-      setData(paginatedData);
-      setAlbums(paginatedData[page]);
+      const paginateData = paginate(fetchedData, numAlbumsPage);
+      setData(paginateData);
+      setAlbums(paginateData[page]);
     } catch (error) {}
 
     try {
