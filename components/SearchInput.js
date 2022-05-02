@@ -48,15 +48,20 @@ export function FreeSoloCreateOption(props) {
       artists.filter((a) => a.name === globalState).length > 0
         ? artists
         : [{ name: globalState }, ...artists];
+
     setArtists(newArtists);
   }, [globalState]);
+
+  useEffect(() => {
+    if (!value) return;
+    props.handleChange(value.name);
+  }, [value]);
 
   return (
     <Autocomplete
       disabled={props.disabled}
       value={value}
       onChange={(event, newValue) => {
-        props.handleChange(event);
         if (typeof newValue === "string") {
           setValue({
             name: newValue,
@@ -93,6 +98,7 @@ export function FreeSoloCreateOption(props) {
       getOptionLabel={(option) => {
         // Value selected with enter, right from the input
         if (typeof option === "string") {
+          //props.handleChange(option);
           return option;
         }
         // Add "xxx" option created dynamically
@@ -100,6 +106,7 @@ export function FreeSoloCreateOption(props) {
           return option.inputValue;
         }
         // Regular option
+
         return option.name;
       }}
       renderOption={(props, option) => <li {...props}>{option.name}</li>}

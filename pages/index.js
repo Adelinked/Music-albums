@@ -29,6 +29,7 @@ export default function Home() {
       numPages = Math.floor(fetchedData.length / numAlbumsPage);
       const paginateData = paginate(fetchedData, numAlbumsPage);
       setData(paginateData);
+      setPage(0);
       setAlbums(paginateData[page]);
     } catch (error) {}
 
@@ -77,16 +78,11 @@ export default function Home() {
         : artistInfo.bio.content.slice(0, 200) + "...";
   }
 
-  const handleChange = (e) => {
-    const artist = e.target.innerText;
+  const handleChange = (p) => {
+    const artist = p;
     setGlobalState(artist);
     setLoading(true);
     setMoreInfo(false);
-    setArtistInfo([]);
-    setAlbums([]);
-    setData([]);
-    setPage(0);
-
     getData(artist);
   };
 

@@ -89,6 +89,7 @@
 }
 .lessMore {
   margin-top: -20px;
+  cursor: pointer;
 }
 @media (max-width: 992px) {
   .albums {
