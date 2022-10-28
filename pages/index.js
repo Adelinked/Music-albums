@@ -177,7 +177,7 @@ export default function Home() {
               </span>
             </div>
             <div className={styles.albums}>
-              {albums.map((a) => (
+              {albums?.map((a) => (
                 <Album
                   key={a.name}
                   name={a.name}

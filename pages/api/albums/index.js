@@ -1,7 +1,6 @@
 import axios from "axios";
 
 const apiKey = process.env.LASTFM_API_KEY;
-
 export default async function handler(req, res) {
   const { artist } = req.query;
   try {
@@ -10,7 +9,7 @@ export default async function handler(req, res) {
     );
     res.status(200).json({ msg: data.data });
   } catch (error) {
-    //res.status(400).json({ msg: error });
+   // res.status(400).json({ msg: error });
   }
   //res.status(200).json({ data: "hi" });
 }
